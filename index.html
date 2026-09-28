@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>קורא EPUB</title>
+    <meta name="description" content="קורא ספרים שנבנה לעברית: קריאה בדפדפן, או התקנה ל-Windows." />
+    <link rel="icon" href="favicon.ico" />
+    <style>
+      /* Landing page for the published site (scripts/deploy-site.mjs).
+         Every value is copied from the token block at the top of
+         src/index.css so the page reads as the same object as the app:
+         ink on paper, no accent hue, one filled control per screen. */
+      @font-face {
+        font-family: 'Assistant';
+        font-style: normal;
+        font-weight: 200 800;
+        font-display: swap;
+        src: url('fonts/Assistant-Variable.ttf') format('truetype');
+      }
+
+      :root {
+        --bg: #f5f2ea;
+        --bg-elevated: #fffdf8;
+        --border: #ddd6c7;
+        --border-strong: #8a8378;
+        --text: #211f1a;
+        --text-muted: #6b665c;
+        --accent: #211f1a;
+        --accent-hover: #423d33;
+        --on-accent: #fffdf8;
+        --focus: #211f1a;
+        --select: color-mix(in srgb, var(--text) 8%, transparent);
+
+        --r-sm: 6px;
+        --r: 10px;
+        --t-sm: 0.875rem;
+        --t-md: 1rem;
+        --t-lg: 1.1875rem;
+        --t-2xl: 2rem;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-6: 24px;
+        --sp-8: 32px;
+        --font-ui: 'Assistant', 'Arial Hebrew', 'David', system-ui, sans-serif;
+        /* The app's --ctl-h is 28px, sized for a mouse. These two links are the
+           whole page and are tapped on phones, so they take the 44px touch
+           target instead. */
+        --cta-h: 44px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #131211;
+          --bg-elevated: #1a1917;
+          --border: #302c26;
+          --border-strong: #6a655c;
+          --text: #ece8df;
+          --text-muted: #948d80;
+          --accent: #ece8df;
+          --accent-hover: #fffdf8;
+          --on-accent: #131211;
+          --focus: #ece8df;
+          --select: color-mix(in srgb, var(--text) 12%, transparent);
+        }
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: var(--font-ui);
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: var(--r-sm);
+      }
+
+      .page {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: var(--sp-6) var(--sp-4) var(--sp-8);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-weight: 700;
+        font-size: var(--t-md);
+      }
+
+      .brand__mark {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--r-sm);
+        background: var(--bg-elevated);
+        font-weight: 700;
+      }
+
+      .hero {
+        padding-block: 72px var(--sp-8);
+      }
+
+      h1 {
+        font-size: var(--t-2xl);
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .lead {
+        margin-top: var(--sp-3);
+        font-size: var(--t-lg);
+        color: var(--text-muted);
+        max-width: 34em;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-top: var(--sp-6);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: var(--cta-h);
+        padding: 0 var(--sp-6);
+        border-radius: var(--r-sm);
+        border: 1px solid transparent;
+        font-family: inherit;
+        font-size: var(--t-md);
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.13s ease, border-color 0.13s ease;
+      }
+
+      .btn--primary { background: var(--accent); color: var(--on-accent); }
+      .btn--primary:hover { background: var(--accent-hover); }
+      .btn--ghost { background: var(--bg-elevated); border-color: var(--border-strong); color: var(--text); }
+      .btn--ghost:hover { background: var(--select); }
+
+      .fineprint {
+        margin-top: var(--sp-3);
+        font-size: var(--t-sm);
+        color: var(--text-muted);
+      }
+
+      /* Flat in the flow, separated by hairlines — no card around the notes. */
+      .notes {
+        border-top: 1px solid var(--border);
+      }
+
+      .note {
+        padding-block: var(--sp-4);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .note h2 {
+        font-size: var(--t-md);
+        font-weight: 700;
+      }
+
+      .note p {
+        margin-top: 4px;
+        font-size: var(--t-md);
+        color: var(--text-muted);
+      }
+
+      .note a { color: var(--text); }
+
+      kbd {
+        font-family: inherit;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      footer {
+        margin-top: var(--sp-6);
+        font-size: var(--t-sm);
+        color: var(--text-muted);
+      }
+
+      @media (max-width: 480px) {
+        .hero { padding-top: 40px; }
+        .actions .btn { flex: 1 1 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="brand">
+        <span class="brand__mark" aria-hidden="true">ק</span>
+        <span>קורא EPUB</span>
+      </header>
+
+      <main>
+        <section class="hero">
+          <h1>קורא ספרים שנבנה לעברית</h1>
+          <p class="lead">
+            ימין לשמאל כמו שצריך, גופנים עבריים, וזיכרון מדויק של המקום שבו הפסקת לקרוא.
+          </p>
+          <div class="actions">
+            <a class="btn btn--primary" href="app/">קרא בדפדפן</a>
+            <a class="btn btn--ghost" href="https://github.com/idog2210/epubreader-web/releases/latest/download/HebrewEpubReader-Setup.exe">הורד ל-Windows</a>
+          </div>
+          <!-- Each item isolated and opened in Hebrew: mixed runs joined by
+               separators otherwise reorder into nonsense under the bidi rules. -->
+          <p class="fineprint">
+            <bdi>ל-Windows 10 ו-11</bdi> · <bdi>כ-100MB</bdi> · <bdi>קובצי EPUB, PDF, TXT, HTML ו-Markdown</bdi>
+          </p>
+        </section>
+
+        <section class="notes" aria-label="מה חשוב לדעת">
+          <div class="note">
+            <h2>קריאה בדפדפן</h2>
+            <p>
+              ספר שתייבא נשמר רק בדפדפן שבו ייבאת אותו, במכשיר הזה. סנכרון בין המחשב לטלפון
+              יגיע עם חשבון epubreader.
+            </p>
+          </div>
+          <div class="note">
+            <h2>התקנה במחשב</h2>
+            <p>
+              הקובץ לא חתום דיגיטלית, ולכן Windows עשוי להציג את ההודעה
+              <kbd>Windows protected your PC</kbd>. לחץ <kbd>More info</kbd> ואז <kbd>Run anyway</kbd>.
+            </p>
+          </div>
+          <div class="note">
+            <h2>בלי התקנה</h2>
+            <p>
+              יש גם <a href="https://github.com/idog2210/epubreader-web/releases/latest/download/HebrewEpubReader-portable.exe">גרסה ניידת</a>
+              שרצה ישר מהקובץ, למשל מ-USB.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer>גרסה 0.1.0</footer>
+    </div>
+  </body>
+</html>
